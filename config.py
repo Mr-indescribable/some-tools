@@ -55,28 +55,28 @@ class Config():
         存储结构：
             before:
                 {
-                  "x": "X",
-                  "a": {
-                         "y": "Y",
-                         "b": {
-                                "c": "The Value!"
-                              }
-                       }
+                    "x": "X",
+                    "a": {
+                        "y": "Y",
+                        "b": {
+                            "c": "The Value!"
+                        }
+                    }
                 }
 
             after:
                 {
-                  "x": "X",
-                  "a": new_config_instance_0
+                    "x": "X",
+                    "a": new_config_instance_0
                 }
 
                 new_config_instance_0: {
-                                         "y": "Y",
-                                         "b": new_config_instance_1
+                                           "y": "Y",
+                                           "b": new_config_instance_1
                                        }
 
                 new_config_instance_1: {
-                                         "c": "The Value!"
+                                           "c": "The Value!"
                                        }
         '''
 

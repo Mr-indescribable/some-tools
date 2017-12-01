@@ -21,16 +21,16 @@ class Config():
                     conf = cf.read()
             except FileNotFoundError:
                 print('Cannot open %s: No such file or directory' % config_path)
-                sys.exit()
+                sys.exit(1)
             except PermissionError:
                 print('Cannot open %s: Permission denied' % config_path)
-                sys.exit()
+                sys.exit(1)
 
             try:
                 conf = json.loads(conf)
             except json.decoder.JSONDecodeError:
                 print('Json formation error in config file, please recheck')
-                sys.exit()
+                sys.exit(1)
 
             conf['__sh_args__'] = dict(sh_args._get_kwargs())
             self._conf = conf

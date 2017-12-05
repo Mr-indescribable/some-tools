@@ -1,3 +1,3 @@
-在这里存放了一些有用的小工具。
+在这里存放了一些有趣的东西（或链接）。
 
-Here stored some useful gadgets.
+Here stored some interesting stuffs (or links).

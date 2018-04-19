@@ -12,8 +12,22 @@ class ObjectifiedDict():
         except AttributeError:
             return None
 
+    @staticmethod
+    def _convert(item):
+        if isinstance(item, dict):
+            return ObjectifiedDict(**item)
+        if isinstance(item, list):
+            return [ObjectifiedDict._convert(unit) for unit in item]
+        if isinstance(item, tuple):
+            return (ObjectifiedDict._convert(unit) for unit in item)
+        if isinstance(item, set):
+            return {ObjectifiedDict._convert(unit) for unit in item}
+        else:
+            return item
+
     def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
+        for key, value in kwargs.items():
+            self.__dict__[key] = self._convert(value)
 
     def __bool__(self):
         return bool(self.__dict__)
@@ -21,16 +35,22 @@ class ObjectifiedDict():
     def __clear__(self):
         self.__dict__.clear()
 
+    @staticmethod
+    def _to_dumpable(item):
+        if item.__class__ is bytes:
+            return '<bytes length=%d>' % len(item)
+        elif isinstance(item, ObjectifiedDict):
+            return item.__str_assist__()
+        elif item.__class__ in (list, tuple, set):
+            return [ObjectifiedDict._to_dumpable(unit) for unit in item]
+        elif item.__class__ not in (int, str, None):
+            return str(item)
+        return item
+
     def __str_assist__(self):
         d = {}
-        for k, v in self.__dict__.items():
-            if v.__class__ is bytes:
-                v = '<bytes length=%d>' % len(v)
-            elif isinstance(v, ObjectifiedDict):
-                v = v.__str_assist__()
-            elif v.__class__ not in (int, str, None):
-                v = str(v)
-            d[k] = v
+        for key, value in self.__dict__.items():
+            d[key] = self._to_dumpable(value)
         return d
 
     def __str__(self):

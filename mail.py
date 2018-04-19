@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 
 
 class MailClient(object):
+
     smtp_server = ''
     account = ''
     passwd = ''

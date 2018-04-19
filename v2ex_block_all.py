@@ -12,6 +12,10 @@ HOME = 'https://www.v2ex.com/?tab=all'
 
 class V2EXBlocker():
 
+    '''
+        BLOCK ALL THESE M*****F*****s !!!
+    '''
+
     def __init__(self, cookies={}):
         self._cookies = cookies
 
@@ -25,7 +29,7 @@ class V2EXBlocker():
         print('blocked UID=%d' % uid)
 
     def block_all(self):
-        uid = 12876
+        uid = 0
         while True:
             try:
                 self.block(uid)

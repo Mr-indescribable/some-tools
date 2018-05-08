@@ -29,6 +29,11 @@ class ObjectifiedDict():
         for key, value in kwargs.items():
             self.__dict__[key] = self._convert(value)
 
+    def __iter__(self):
+        return iter(
+            self.__dict__.items()
+        )
+
     def __bool__(self):
         return bool(self.__dict__)
 

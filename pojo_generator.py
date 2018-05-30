@@ -6,9 +6,12 @@ import importlib
 
 
 FILE_TEMP = (
-    'package %(pkg_name)s;\n\n\n'
+    'package %(pkg_name)s;\n\n'
+    '%(imports)s\n\n\n'
     '%(pojo_body)s'
 )
+
+IMPORT_TEMP = 'import %s;'
 
 CLASS_TEMP = (
     'public class %(name)s {\n\n'
@@ -64,11 +67,31 @@ class PojoGenerator():
             generator = PojoGenerator()
             pojos = generator.gen_str_from_module('pojo_pkg.pojo_module')
 
-        3. 生成代码输出到对应目录:
+        3. 生成代码输出到文件:
 
             可以选择从 Python 类或模块中生成代码，并写入到对应目录下的文件中
             类的声明方式与上面 2 种用法相同，需要配置额外属性 __pkg__，
             __pkg__ 为 Java 包名，str 格式
+
+            若需要在 POJO 文件中添加 import，
+            则可以为 POJO 类声明 __imports__ 属性，其值为任意可迭代类型
+
+            一个完整的例子：
+
+                class Pojo:
+
+                    __pkg__ = 'org.test.pojos'
+
+                    __imports__ = [
+                        'java.util.Date',
+                        'java.util.List',
+                    ]
+
+                    attr0 = "int"
+                    attr1 = "Date"
+                    attr2 = "List"
+                    attr3 = "List<Date>"
+
 
             完成类或模块的编写之后，使用 gen_file_from_* 函数来生成 POJO 文件
     '''
@@ -127,7 +150,7 @@ class PojoGenerator():
         func_name = attr_name.upper()[0] + attr_name[1:]
         return 'set' + func_name
 
-    def gen_str_from_class(self, cls, with_pkg=False):
+    def gen_str_from_class(self, cls, as_file=False):
         attrs = []
         getters = []
         setters = []
@@ -156,11 +179,18 @@ class PojoGenerator():
                    setters,
                )
 
-        if with_pkg:
+        if as_file:
+            imports = getattr(cls, '__imports__', [])
+
+            import_code = '\n'.join(
+                [IMPORT_TEMP % import_ for import_ in imports]
+            )
+
             return FILE_TEMP % {
-                       'pkg_name': cls.__pkg__,
-                       'pojo_body': pojo,
-                   }
+                'pkg_name': cls.__pkg__,
+                'imports': import_code,
+                'pojo_body': pojo,
+            }
         else:
             return pojo
 
@@ -174,7 +204,7 @@ class PojoGenerator():
         ]
 
     def gen_file_from_class(self, cls):
-        code = self.gen_str_from_class(cls, with_pkg=True)
+        code = self.gen_str_from_class(cls, as_file=True)
 
         try:
             pkg = getattr(cls, '__pkg__')

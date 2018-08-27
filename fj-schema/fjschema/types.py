@@ -123,6 +123,35 @@ class Array(_JTypeMixin):
         self.verify_array(value)
 
 
+class ContainerArray(Array):
+
+    ''' Container Array
+
+    As a container, a container array should contain multiple items that
+    with a same schema.
+    '''
+
+    PY_TYPE = list
+
+    def __init__(self, item_schema, max_len=None, nullable=False):
+        ''' Constructor
+
+        :param item_schema: the schema of items in the array.
+                            It could be one of json types defined in this module
+        :param max_len: the max length of the array, None is equal to unlimited
+        :param nullable: whether this array could be null
+        '''
+
+        self.minimum = 0
+        self.maximum = max_len
+        self.nullable = nullable
+        self.item_schema = item_schema
+
+    def verify_array(self, array):
+        for item in array:
+            self.item_schema.verify(item)
+
+
 class Json(_JTypeMixin):
 
     PY_TYPE = dict

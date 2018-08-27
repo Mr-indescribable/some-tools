@@ -16,3 +16,5 @@ def json_schema_verified(func):
 
         JsonSchemaValidator.validate(route, json)
         return func(*args, **kwargs)
+
+    return wrapper

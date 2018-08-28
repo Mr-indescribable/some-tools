@@ -27,7 +27,17 @@ class JSchema0(metaclass=MetaSchema):
 
     # this is the schema specification
     schema = Json(
-        name   = String(128, nullable=False),
-        height = Integer(nullable=False)
-        weight = Integer(nullable=True),
+        attr_str     = String(128, nullable=False),
+        attr_int     = Integer(nullable=True),
+        some_objects = ContainerArray(
+                           item_schema=String(128, schema=r'^SomeRegex$'),
+                           min_len=1,
+                           max_len=10,
+                           nullable=True,
+                       ),
+        nested_json  = Json(
+                           attr0 = String(128),
+                           attr1 = Integer(minimum=0, maximum=100),
+                           attr2 = Float(minimum=0.1, maximum=0.9),
+                       ),
     )

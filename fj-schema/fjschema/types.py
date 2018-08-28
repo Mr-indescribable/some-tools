@@ -1,6 +1,8 @@
 #!/usr/bin/python3.6
 #coding: utf-8
 
+import re
+
 from werkzeug.exceptions import (
     BadRequest,
     UnprocessableEntity,
@@ -13,6 +15,7 @@ __all__ = [
     'String',
     'Boolean',
     'Array',
+    'ContainerArray',
     'Json',
 ]
 
@@ -69,14 +72,27 @@ class String(_JTypeMixin):
 
     PY_TYPE = str
 
-    def __init__(self, max_len=0, nullable=False):
+    def __init__(self, max_len=None, schema=None, nullable=False):
+        ''' Constructor
+
+        :param max_len: maximum length
+        :param schema: schema of the String, it could be regex string or
+                      compiled regex object (from re.compile)
+        '''
+
         self.minimum = 0
         self.maximum = max_len
+        self.schema = schema
         self.nullable = nullable
 
     def verify_value(self, value):
-        if not self.minimum <= len(value) <= self.maximum:
-            raise UnprocessableEntity
+        if max_len is not None:
+            if not self.minimum <= len(value) <= self.maximum:
+                raise UnprocessableEntity
+
+        if self.schema is not None:
+            if not re.match(self.schema, value):
+                raise UnprocessableEntity
 
 
 class Boolean(_JTypeMixin):
@@ -91,8 +107,18 @@ class Array(_JTypeMixin):
 
     PY_TYPE = list
 
-    def __init__(self, max_len=None, nullable=False, array_schema=None):
-        self.minimum = 0
+    def __init__(
+        self, min_len=None, max_len=None, nullable=False, array_schema=None
+    ):
+        ''' Constructor
+
+        :param min_len: minimum length
+        :param max_len: maximum length
+        :param array_schema: schema of the array，list type，
+                             items in this list should be instances of JsonTypes
+        '''
+
+        self.minimum = min_len
         self.maximum = max_len
         self.nullable = nullable
         self.array_schema = array_schema
@@ -133,16 +159,16 @@ class ContainerArray(Array):
 
     PY_TYPE = list
 
-    def __init__(self, item_schema, max_len=None, nullable=False):
+    def __init__(self, item_schema, min_len=None, max_len=None, nullable=False):
         ''' Constructor
 
         :param item_schema: the schema of items in the array.
                             It could be one of json types defined in this module
         :param max_len: the max length of the array, None is equal to unlimited
-        :param nullable: whether this array could be null
+        :param nullable: whet
         '''
 
-        self.minimum = 0
+        self.minimum = min_len
         self.maximum = max_len
         self.nullable = nullable
         self.item_schema = item_schema

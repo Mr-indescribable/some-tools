@@ -86,7 +86,7 @@ class String(_JTypeMixin):
         self.nullable = nullable
 
     def verify_value(self, value):
-        if max_len is not None:
+        if self.maximum is not None:
             if not self.minimum <= len(value) <= self.maximum:
                 raise UnprocessableEntity
 
